@@ -1,7 +1,0 @@
-<Project>
-  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory).a\o\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(MSBuildThisFileDirectory).a\b\$(MSBuildProjectName)\</BaseOutputPath>
-    <PublishDir>$(MSBuildThisFileDirectory).a\p\$(MSBuildProjectName)\</PublishDir>
-  </PropertyGroup>
-</Project>

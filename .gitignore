@@ -367,3 +367,6 @@ src/dk.gi.app.Anonymisering/dk.gi.app.Anonymisering/dk.gi.crm.app.Anonymisering.
 # Legacy per-job build zips
 src/**/*.zip
 
+src/**/*.zip
+artifacts/
+.a/

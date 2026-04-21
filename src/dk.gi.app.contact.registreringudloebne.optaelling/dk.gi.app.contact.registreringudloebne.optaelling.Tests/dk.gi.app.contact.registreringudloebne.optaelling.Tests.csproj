@@ -2,9 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <IsPackable>false</IsPackable>
-    <Nullable>disable</Nullable>
-	  <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\.a\o\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-	  <BaseOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\.a\b\$(MSBuildProjectName)\</BaseOutputPath>
+    <Nullable>disable</Nullable>	
 	  <PublishDir>$(MSBuildThisFileDirectory)..\..\..\..\.a\p\$(MSBuildProjectName)\</PublishDir>
   </PropertyGroup>
 
@@ -19,4 +17,7 @@
     <ProjectReference Include="..\..\..\shared\Gi.Batch.Shared.csproj" />
   </ItemGroup>
 </Project>
+
+
+
 
