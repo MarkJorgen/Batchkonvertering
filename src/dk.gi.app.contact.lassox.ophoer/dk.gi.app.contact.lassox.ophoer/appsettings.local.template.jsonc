@@ -1,0 +1,10 @@
+// Lokal override for dk.gi.app.contact.lassox.ophoer.
+// Systemforvaltede CRM-settings kommer fra App Configuration / environment og skal ikke hardcodes her.
+{
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\\Temp\\GI.Batch\\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com",
+  "CrmAuthorityMode": "TenantBase"
+}

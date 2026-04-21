@@ -1,0 +1,39 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="dk.gi.crm.app.LaanCsvGenerator.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="GI_CVR" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">26092515</Value>
+    </Setting>
+    <Setting Name="GI_Aftale_Type" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">99</Value>
+    </Setting>
+    <Setting Name="GI_Aftale_Beskrivelse" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GI Lån</Value>
+    </Setting>
+    <Setting Name="GI_RisikoKlassificering" Type="dk.gi.crm.app.LaanCsvGenerator.RisikoKlassificeringOptions" Scope="Application">
+      <Value Profile="(Default)">Grøn</Value>
+    </Setting>
+    <Setting Name="CSV_Formatting_Culture" Type="System.Globalization.CultureInfo" Scope="Application">
+      <Value Profile="(Default)">da-DK</Value>
+    </Setting>
+    <Setting Name="CSV_Separator" Type="System.Char" Scope="Application">
+      <Value Profile="(Default)">;</Value>
+    </Setting>
+    <Setting Name="CSV_TextQualifier" Type="System.Char" Scope="Application">
+      <Value Profile="(Default)">"</Value>
+    </Setting>
+    <Setting Name="CRM_Organization" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GI</Value>
+    </Setting>
+    <Setting Name="APP_WaitBeforeExit" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CSV_WriteInANSI" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CSV_OutputFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Temp\GI_AB-Laan_Docs</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

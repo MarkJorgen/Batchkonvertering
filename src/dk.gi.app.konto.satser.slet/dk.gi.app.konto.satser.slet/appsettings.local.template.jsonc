@@ -1,0 +1,16 @@
+// Lokal override for dk.gi.app.konto.satser.slet.
+// CRM-kerneværdier kommer fra App Configuration / environment og skal ikke hardcodes her.
+{
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\\Temp\\GI.Batch\\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com",
+  "AuthorityMode": "AsConfigured",
+  "RuntimeEngine": "Modern",
+  "EnableLegacySettingWriteOut": false,
+  "SatsAar": 2027,
+  "TimeOutMinutter": 2,
+  "SecondsToSleep": 45,
+  "MaxWaitCount": 15
+}

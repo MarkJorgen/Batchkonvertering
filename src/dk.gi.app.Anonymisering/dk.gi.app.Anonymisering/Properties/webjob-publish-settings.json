@@ -1,0 +1,5 @@
+﻿{
+  "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json",
+  "webJobName": "gif-batch-app",
+  "runMode": "Continuous"
+}

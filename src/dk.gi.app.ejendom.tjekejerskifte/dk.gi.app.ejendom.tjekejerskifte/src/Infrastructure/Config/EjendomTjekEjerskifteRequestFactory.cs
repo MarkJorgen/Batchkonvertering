@@ -1,0 +1,2 @@
+using dk.gi.app.ejendom.tjekejerskifte.Application.Models; using Gi.Batch.Shared.Configuration;
+namespace dk.gi.app.ejendom.tjekejerskifte.Infrastructure.Config { public static class EjendomTjekEjerskifteRequestFactory { public static EjendomTjekEjerskifteRequest Create(JobConfiguration configuration, EjendomTjekEjerskifteSettings settings) => new EjendomTjekEjerskifteRequest(configuration.GetInt("MaxDage", settings.MaxDage), configuration.GetInt("MaxAntal", settings.MaxAntal), settings.Mode, settings.RunMode); } }

@@ -1,0 +1,13 @@
+// Lokal override for dk.gi.app.ejendom.tjekejerskifte.
+// CRM- og Service Bus-kerneværdier er systemforvaltede og holdes ude af lokalfilen.
+{
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\\Temp\\GI.Batch\\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com",
+  "AuthorityMode": "TenantBase",
+  "MaxDage": 30,
+  "MaxAntal": 1000,
+  "QueueScheduleStepSeconds": 15
+}

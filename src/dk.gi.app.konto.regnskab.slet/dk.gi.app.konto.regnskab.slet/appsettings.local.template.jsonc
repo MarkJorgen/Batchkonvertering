@@ -1,0 +1,10 @@
+{
+  // Lokal override-fil. Systemforvaltede CRM- og Service Bus-kernedata skal som udgangspunkt ikke ligge her.
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\Temp\GI.Batch\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com",
+  "DefaultBatchCount": 100,
+  "DelayStepSeconds": 15
+}

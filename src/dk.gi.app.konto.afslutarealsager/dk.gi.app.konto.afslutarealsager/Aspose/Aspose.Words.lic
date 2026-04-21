@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<License>
+  <Data>
+    <LicensedTo>Grundejernes Investeringsfond</LicensedTo>
+    <LicenseType>Developer Small Business</LicenseType>
+    <LicenseNote>Limited to 1 developer.</LicenseNote>
+    <OrderID>131014003451</OrderID>
+    <OEM>This is not a redistributable license</OEM>
+    <Products>
+      <Product>Aspose.Words for .NET</Product>
+    </Products>
+    <EditionType>Enterprise</EditionType>
+    <SerialNumber>226de0da-e753-4108-9367-b65c3a8ffe21</SerialNumber>
+    <SubscriptionExpiry>20141018</SubscriptionExpiry>
+    <LicenseVersion>2.2</LicenseVersion>
+  </Data>
+  <Signature>FU8h5vZrf79GaGiXrkMj9CBEZUgoSRFBYhNIvyi33S0mRVpiiYOn1k3MDGr43Q+or3fdpy6va/+gaqO+wAX+wG6DSldlZJP4agxB9VXnHBFaXUp1T09YLN4Y3HL4ySirZQ5xolf5alyCF1Gm3yhs8JL1gvwgyJGJn/xGvLcvvFQ=</Signature>
+</License>

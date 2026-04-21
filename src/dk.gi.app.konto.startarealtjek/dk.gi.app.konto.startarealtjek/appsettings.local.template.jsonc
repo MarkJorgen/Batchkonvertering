@@ -1,0 +1,11 @@
+// Lokal override for dk.gi.app.konto.startarealtjek.
+// Systemforvaltede CRM- og Service Bus-kerneværdier er bevidst fjernet fra lokalfilen.
+{
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\\Temp\\GI.Batch\\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com",
+  "CrmAuthorityMode": "TenantBase",
+  "BuildYearBefore": 1970
+}

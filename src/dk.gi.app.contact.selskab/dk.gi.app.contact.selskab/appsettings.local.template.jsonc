@@ -1,0 +1,10 @@
+// Lokal override for dk.gi.app.contact.selskab.
+// Systemforvaltede CRM- og Service Bus-settings kommer fra App Configuration / environment eller sen resolution og skal ikke hardcodes her.
+{
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\\Temp\\GI.Batch\\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com",
+  "CrmAuthorityMode": "TenantBase"
+}

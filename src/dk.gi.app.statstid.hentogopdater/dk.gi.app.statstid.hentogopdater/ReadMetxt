@@ -1,0 +1,32 @@
+﻿/// <remarks>
+///    Dette batch program afvikler dk.gi.crm.statstid.hentogopdater.library som henter data fra Statstidende for
+///    eventuelt opdatering af crm.
+///
+///    Namespace: 
+///
+///	   Build af dette projekt i visual studio kræver et antal NuGet pakker. Se i packages.config
+///
+///    dk.gi.crm.data
+///    dk.gi.crm.konto.forretning
+///    dk.gi.crm.faelles.forretning
+///    dk.gi.crm.statstid.hentogopdater.library
+///    dk.gi.statstidende.servicelink.library
+/// =============================================================================================================================
+/// YYYY MM DD INIT History
+/// -----------------------------------------------------------------------------------------------------------------------------
+/// 2025 03 13 RCL  Opdateret NuGet pakker
+/// 2025 03 07 RCL  Opdateret NuGet pakker
+/// 2025 02 04 JMW  Opdateret NuGet pakker
+/// 2022 12 20 RCL  Opgrade to 4.8 and dk.gi.crm.statstid.hentogopdater.library 2022.12.19.1414 and new bll etc.
+/// 2022 06 17 RCL  Opgraderet til nyeste dk.gi.crm.statstid.hentogopdater.library 2022.6.17.802 og nyeste forretning
+/// 2022 04 06 RCL  Opgraderet til nyeste dk.gi.crm.statstid.hentogopdater.library 2022.4.6.1229 + alle de andre
+/// 2022 03 31 RCL  Opgraderet til nyeste dk.gi.app.console.template.GiNugetSrc 2022.3.29.1146 og dk.gi.library 2022.3.17.2000 + alle de andre og 4.6.2
+/// 2021 01 25 RCL  Opgraderet til nyeste console app for prod
+/// 2022 01 24 RCL  2022.1.24.1337 dk.gi.crm.statstid.hentogopdater.library med ny forretning og DAGSDATO flettefelt
+/// 2021 04 10 RCL  Opgraderet til environment variabler
+/// 2021 04 10 RCL  2021.10.4.1046 dk.gi.crm.statstid.hentogopdater.library
+/// 2021 06 28 RCL  SendEmails switch
+/// 2021 06 24 RCL  Release
+/// 2021 06 28 RCL  SendEmails switch
+/// </remarks>
+-->

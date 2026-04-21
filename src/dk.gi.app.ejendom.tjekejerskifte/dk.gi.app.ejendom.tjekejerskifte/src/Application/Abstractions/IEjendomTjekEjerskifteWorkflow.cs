@@ -1,0 +1,1 @@
+using dk.gi.app.ejendom.tjekejerskifte.Application.Models; namespace dk.gi.app.ejendom.tjekejerskifte.Application.Abstractions { public interface IEjendomTjekEjerskifteWorkflow { EjendomTjekEjerskifteExecutionSummary Execute(EjendomTjekEjerskifteRequest request); } }
