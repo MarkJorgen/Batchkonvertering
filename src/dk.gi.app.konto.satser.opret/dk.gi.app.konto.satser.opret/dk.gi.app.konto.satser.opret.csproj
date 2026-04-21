@@ -275,6 +275,7 @@
     <Reference Include="System.Xml.XmlDocument" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\OpretSatserWorkflow.cs" />
     <Compile Include="Program\Program.Plus.cs" />
     <Compile Include="Program\Program_App_callback.cs" />
     <Compile Include="Program\Program_App_ctor.cs" />
@@ -321,4 +322,3 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
-
