@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location" : {
+            "value": "westeurope"
+        },
+        "resourcePrefix": {
+            "value": "gif"
+        },
+        "workSpaceNameSuffix": {
+            "value": "log"
+        },
+        "workSpaceName": {
+            "value": "batch"
+        },
+        "appInsightsSuffix": {
+            "value": "appi"
+        },
+        "appInsightsName": {
+            "value": "batch"
+        },
+        "appServicePlanSuffix": {
+            "value": "asp"
+        },
+        "appServicePlanName": {
+            "value": "batch"
+        },
+        "webAppName": {
+            "value": "batch"
+        },
+        "webAppSuffix": {
+            "value": "app"
+        },
+        "env":{
+            "value": "prd"
+        },
+        "sku": {
+            "value": "P0V3"
+        }
+    }
+}

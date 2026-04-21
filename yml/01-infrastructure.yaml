@@ -1,0 +1,51 @@
+# Pipeline is only triggered manually
+trigger:
+- none
+
+parameters:
+  - name: azureServiceConnection
+    default: 'GIAzureDev'
+    displayName: Azure service connection, Vælg "GIAzureDEV" eller "GIAzureTST" eller "GIAzureEA" eller "GIAzurePRD"
+    type: string
+    values:
+      - 'GIAzureDev'
+      - 'GIAzureTST'
+      - 'GIAzureEA'
+      - 'GIAzurePRD'
+
+name: Batch infrastructure deployment pipeline
+
+# Defining necessary variables
+variables:
+  location: 'westeurope'
+  # Set environment-specific variables based on the selected Azure service connection
+  ${{ if eq(parameters.azureServiceConnection, 'GIAzureDev') }}:
+    environmentName: 'dev'
+  ${{ elseif eq(parameters.azureServiceConnection, 'GIAzureTST') }}:
+    environmentName: 'tst'
+  ${{ elseif eq(parameters.azureServiceConnection, 'GIAzureEA') }}:
+    environmentName: 'ea'
+  ${{ elseif eq(parameters.azureServiceConnection, 'GIAzurePRD') }}:
+    environmentName: 'prd'
+
+  resourceGroupName: ${{ format('gif-{0}-app-batch', variables.environmentName) }}
+
+pool:
+  vmImage: 'windows-latest'
+
+# Starting the job
+stages:
+- stage: 'Infrastructure'
+  displayName: 'Managed infrastructure deployment'
+  jobs:
+  - job: 'Deployment'
+    steps:    
+    # Deploy the Azure resources using a Bicep template
+    - task: AzureCLI@2
+      displayName: 'Deploy Azure Resources'
+      inputs:
+        azureSubscription: ${{parameters.azureServiceConnection}}
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group create --name batch-infrastructure-deployment --template-file bicep/main.bicep --resource-group $(resourceGroupName) --parameters bicep/parameters/main.$(environmentName).json environmentName=$(environmentName)

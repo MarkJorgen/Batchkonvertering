@@ -1,0 +1,170 @@
+trigger:
+  branches:
+    include:
+      - none
+
+parameters:
+  - name: environmentName
+    default: 'Udvikling'
+    displayName: Environment Name, Vælg "Udvikling" eller "Test" eller "Early access" eller "Produktion"
+    type: string
+    values:
+      - 'Udvikling'
+      - 'Test'
+      - 'Early access'
+      - 'Produktion'
+
+  - name: PackageName
+    default: 'dk.gi.app.Anonymisering'
+    displayName: Name of the package to build
+    type: string
+
+  - name: scheduleName
+    default: 'Triggered'
+    displayName: Webhob schedule
+    type: string
+    values:
+      - 'Triggered'
+      - 'Continous'
+
+name: Batch jobs deployment pipeline
+
+variables:
+  location: 'westeurope'
+  buildPlatform: 'AnyCPU'
+
+  # Set environment-specific variables based on the selected environment
+  ${{ if eq(parameters.environmentName, 'Udvikling') }}:
+    environment: 'dev'
+    azureSubscription: 'GIAzureDev'
+    nugetFeed: 'GI'
+    buildConfiguration: 'debug'
+  ${{ elseif eq(parameters.environmentName, 'Test') }}:
+    environment: 'tst'
+    azureSubscription: 'GIAzureTST'
+    nugetFeed: 'GI'
+    buildConfiguration: 'debug'
+  ${{ elseif eq(parameters.environmentName, 'Early access') }}:
+    environment: 'ea'
+    azureSubscription: 'GIAzureEA'
+    nugetFeed: 'GI'
+    buildConfiguration: 'debug'
+  ${{ elseif eq(parameters.environmentName, 'Produktion') }}:
+    environment: 'prd'
+    azureSubscription: 'GIAzurePRD'
+    nugetFeed: 'GI'
+    buildConfiguration: 'release'
+
+  resourceGroupName: ${{ format('gif-{0}-app-batch', variables.environment) }}
+  WebAppName: ${{ format('gif-{0}-app-batch-app', variables.environment) }}
+
+pool: 
+  vmImage: 'windows-latest'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build Stage'
+  jobs:
+  - job: 'BuildJob'
+    displayName: 'Build Job'
+    steps:
+    - checkout: self
+      # Checkout the repository
+
+    - script: |
+        echo "Cleaning up previous pulls..."
+        git clean -fdx
+      displayName: 'Cleanup previous pulls'
+      # Clean up previous pulls to ensure a clean build environment
+         
+    - script: |
+       echo "Environment: ${{ parameters.environmentName }}"
+       echo "Package Name: ${{ parameters.PackageName }}"
+       echo "Schedule Name: ${{ parameters.scheduleName }}"
+       echo "Azure Subscription: $(azureSubscription)"
+       echo "Resource Group Name: $(resourceGroupName)"
+       echo "Web App Name: $(WebAppName)"
+       echo "restoreSolution: $(Pipeline.Workspace)/s/src/${{parameters.PackageName}}/${{parameters.PackageName}}.sln"
+       echo "nugetConfigPath: $(Pipeline.Workspace)/s/src/nuget.config"
+      displayName: 'Print Variables'
+     # Print variable values for debugging
+
+
+    - task: NuGetToolInstaller@1
+      displayName: 'Use NuGet 5.8.1'
+      inputs:
+        versionSpec: 5.8.1
+      # Install the specified version of NuGet
+
+    # - task: NuGetCommand@2
+    #   displayName: 'Restore GI.Batch NuGet packages'
+    #   inputs:
+    #     restoreSolution: '$(Pipeline.Workspace)/s/src/GI.Batch.sln'
+    #     feedsToUse: 'config'
+    #     nugetConfigPath: '$(Pipeline.Workspace)/s/src/nuget.config'
+    #     noCache: true
+    #   # Restore NuGet packages for the solution file
+
+    - task: NuGetCommand@2
+      displayName: 'Restore ${{parameters.PackageName}} NuGet packages'
+      inputs:
+        restoreSolution: '$(Pipeline.Workspace)/s/src/${{parameters.PackageName}}/${{parameters.PackageName}}.sln'
+        vstsFeed: 'GI'
+      # Restore NuGet packages for the solution file
+
+    - task: AzurePowerShell@5
+      displayName: 'Delete ${{parameters.PackageName}}.zip if exists'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        ScriptType: inlineScript
+        Inline: |
+          $filePath = "$(Pipeline.Workspace)/s/src/${{parameters.PackageName}}/${{parameters.PackageName}}/${{parameters.PackageName}}.zip"
+          if (Test-Path $filePath) {
+            Remove-Item $filePath
+            Write-Output "Deleted file: $filePath"
+          } else {
+            Write-Output "File not found: $filePath"
+          }
+        azurePowerShellVersion: 'LatestVersion'
+      # Delete the zip file if it exists, could potentioally be added to git by mistake, that would result in a failed build
+
+    - task: VSBuild@1
+      displayName: 'Build Solution'
+      inputs:
+        solution: '$(Pipeline.Workspace)/s/src/${{parameters.PackageName}}/${{parameters.PackageName}}/${{parameters.PackageName}}.csproj'
+        msbuildArgs: '/t:build /p:DeployOnBuild=true /p:SkipInvalidConfigurations=true"'
+        configuration: '$(buildConfiguration)'
+        platform: 'AnyCPU'
+      # Build the solution using the specified configuration and platform - The build produces a zip file with the build artifacts
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Build Artifacts'
+      inputs:
+        pathToPublish: '$(Pipeline.Workspace)/s/src/${{parameters.PackageName}}/${{parameters.PackageName}}/${{parameters.PackageName}}.zip'
+        artifactName: 'drop'
+      # Publish the build artifacts
+
+- stage: 'Deploy'
+  displayName: 'Deploy Stage'
+  dependsOn: 'Build'
+  jobs:
+  - job: 'DeployJob'
+    displayName: 'Deploy Job'
+    steps:
+    - checkout: self
+      # Checkout the repository
+
+    - download: current
+      artifact: 'drop'
+      # Download the build artifacts
+
+    - task: AzurePowerShell@5
+      displayName: "Deploy ${{parameters.PackageName}} to Azure App service"
+      inputs:
+        azureSubscription: $(azureSubscription)
+        scriptType: filePath
+        scriptPath: $(Build.SourcesDirectory)\scripts\JobDeploy.ps1
+        scriptArguments:
+          -ResourceGroupName "$(resourceGroupName)" -WebappName $(WebAppName) -WebjobName ${{parameters.PackageName}} -Path "$(Pipeline.Workspace)\drop\${{parameters.PackageName}}.zip" -ScheduleName ${{parameters.scheduleName}}
+        azurePowerShellVersion: 'LatestVersion'
+      # Deploy the package to Azure App Service using a PowerShell script

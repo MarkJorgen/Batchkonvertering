@@ -1,0 +1,161 @@
+# Pipeline is only triggered manually
+# trigger: none
+trigger:
+  branches:
+    include:
+      - develop
+
+parameters:
+  - name: azureSubscription
+    default: 'GIAzureDev'
+    displayName: Azure service connection, Vælg "GIAzureDEV" eller "GIAzureTST" eller "GIAzurePRD"
+    type: string
+    values:
+      - 'GIAzureDev'
+      - 'GIAzureTST'
+      - 'GIAzurePRD'
+
+  - name: PackageName
+    default: 'dk.gi.crm.app.faelles.cprvalidering'
+    displayName: Name of the package to build
+    type: string
+
+  - name: PackageFolder
+    default: 'src/dk.gi.app.cprvalidering'
+    displayName: Name of the package folder to build
+    type: string
+
+  # - name: envName
+  #   default: 'dev'
+  #   displayName: Which environment to deploy to
+  #   values:
+  #     - 'dev'
+  #     - 'tst'
+  #     - 'prd'
+
+  - name: solution
+    default: 'dk.gi.crm.app.faelles.cprvalidering.sln'
+    displayName: Visual Studio solution/projekt, der skal bygges
+    type: string
+
+  - name: debug
+    default: 'false'
+    displayName: 'Debug build?'
+    type: boolean
+
+name: Batch jobs deployment pipeline
+
+# Defining necessary variables
+variables:
+  location: 'westeurope'
+  environmentName: 'dev'
+  resourceGroupName: 'gif-dev-app-batch'
+  WebAppName: 'gif-batch-app'
+  azurewebjobpackage: $(PackageName)
+  WebjobName: 'CprValidering'
+  buildPlatform: 'AnyCPU'
+  buildConfiguration: 'debug'
+
+resources:
+  repositories:
+  - repository: SourceRepo
+    type: git
+    name: App/dk.gi.app.cprvalidering
+  - repository: MainRepo
+    type: git
+    name: App/App
+    ref: develop
+
+pool:
+  vmImage: 'windows-latest'
+
+# Starting the job
+stages:
+- stage: 'DEV'
+  displayName: 'Job-Deployment'
+  jobs:
+  - job: 'Build'
+    steps: 
+    - checkout: SourceRepo
+    - task: VSBuild@1
+      displayName: 'Build Assembly $(azurewebjobpackage)'
+      inputs:
+        solution: '$(Pipeline.Workspace)/s/$(PackageFolder)/$(solution)'
+        msbuildArgs: '/t:build /p:DeployOnBuild=true /p:SkipInvalidConfigurations=true /p:OutputPath="$(Build.ArtifactStagingDirectory)\$(PackageName)"'
+        configuration: '$(buildConfiguration)'
+        platform: '$(buildPlatform)'
+        # - task: NuGetCommand@2
+        #   displayName: 'NuGet pack build to Artifact Staging Directory'
+        #   inputs:
+        #     command: 'pack'
+        #     packagesToPack:  '$(Pipeline.Workspace)/s/dk.gi.app.cprvalidering/dk.gi.app.cprvalidering/dk.gi.crm.app.faelles.cprvalidering.csproj'
+        #     packDestination: '$(Build.ArtifactStagingDirectory)'
+        #     includeSymbols: true
+        # drop nuget pack into devops storeage
+        # - task: PublishBuildArtifacts@1
+        #   displayName: Publish drop to $(Build.ArtifactStagingDirectory)
+        #   inputs:
+        #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        #     ArtifactName: 'drop'
+        #     publishLocation: 'dk.gi.app.cprvalidering'
+  # - job: 'Deployment'
+  #   steps:
+  #   - checkout: MainRepo    
+  #   - task: PowerShell@2
+  #     displayName: 'Output_ArtifactStagingDirectory'
+  #     inputs:
+  #       targetType: inline
+  #       script: |
+  #         write-host "ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
+  #         Get-ChildItem "$(Build.ArtifactStagingDirectory)/" -recurse 
+  #         write-host "SourcesDirectory: $(Build.SourcesDirectory)"
+  #         Get-ChildItem "$(Build.SourcesDirectory)/" -recurse 
+    # - task: AzurePowerShell@5
+    #   displayName: 'Create zip file'
+    #   inputs:
+    #     azureSubscription: ${{parameters.azureServiceConnection}}
+    #     scriptType: filePath
+    #     scriptPath: $(Pipeline.Workspace)/s/App/scripts/CreateZipFile.ps1
+    #     scriptArguments:
+    #       -DirectoryPath "$(Pipeline.Workspace)\s\dk.gi.app.cprvalidering\dk.gi.app.cprvalidering\bin\Debug" -ZipFilePath "$(Build.ArtifactStagingDirectory)/demo.zip" -CompressionLevel 'Optimal' -IncludeBaseDirectory
+    #     azurePowerShellVersion: 'LatestVersion'
+    # - task: PublishBuildArtifacts@1
+    #   inputs:
+    #     pathToPublish: $(Build.ArtifactStagingDirectory)
+    #     artifactName: ZipOutputs      
+    # - task: PowerShell@2
+    #   displayName: 'Output_AllDirectory'
+    #   inputs:
+    #     targetType: inline
+    #     script: |
+    #       write-host "Base: $(Build.SourcesDirectory)"
+    #       Get-ChildItem "$(Build.SourcesDirectory)/" 
+    #       write-host "Jobs: $(Build.SourcesDirectory)/jobs"
+    #       Get-ChildItem "$(Build.SourcesDirectory)/jobs" 
+    #       write-host "Artifacts: $(Build.ArtifactStagingDirectory)"
+    #       Get-ChildItem "$(Build.ArtifactStagingDirectory)" 
+    # - template: ${{variables['System.DefaultWorkingDirectory']}}/pipelines/templates/Webjob-deploy.yaml
+    #   parameters:
+    #     AzureServiceConnection: ${{parameters.azureServiceConnection}}
+    #     ResourceGroupName: $(resourceGroupName)
+    #     AzureWebjobPackageName: $(azurewebjobpackage)
+    #     WebAppName: $(WebAppName)
+    #     WebjobName: 'CprValidering-continuous'
+    #     RepoName: 'App'
+    #     JobType: 'continuous'
+
+    # - template: ${{variables['System.DefaultWorkingDirectory']}}/pipelines/templates/Webjob-deploy.yaml
+    #   parameters:
+    #     AzureServiceConnection: ${{parameters.azureServiceConnection}}
+    #     ResourceGroupName: $(resourceGroupName)
+    #     AzureWebjobPackageName: $(azurewebjobpackage)
+    #     WebAppName: $(WebAppName)
+    #     WebjobName: 'CprValidering-triggered'
+    #     RepoName: 'App'
+    #     JobType: 'triggered'
+
+# https://www.rahulpnath.com/blog/azure-webapp-with-webjobs-dotnet-core-build-depoy/
+# https://anuraj.dev/blog/how-to-deploy-azure-webjobs-using-powershell/
+# https://medium.com/@marcmathijssen/deploy-a-net-core-webjob-within-azure-devops-21bfd71d1264
+# https://gist.github.com/jenyayel/e90ab7bd3163d0052d86b0723929e8b1
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/vsbuild-v1?view=azure-pipelines
