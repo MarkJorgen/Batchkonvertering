@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <IsPackable>false</IsPackable>
@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\dk.gi.app.konto.startarealtjek\dk.gi.app.konto.startarealtjek.csproj" />
-    <ProjectReference Include="..\..\..\shared\Gi.Batch.Shared\Gi.Batch.Shared.csproj" />
+    <ProjectReference Include="..\..\..\shared\Gi.Batch.Shared.csproj" />
   </ItemGroup>
 </Project>
+

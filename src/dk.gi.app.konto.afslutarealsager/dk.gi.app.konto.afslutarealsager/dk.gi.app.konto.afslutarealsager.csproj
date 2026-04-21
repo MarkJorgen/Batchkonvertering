@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\shared\Gi.Batch.Shared\Gi.Batch.Shared.csproj" />
+    <ProjectReference Include="..\..\..\shared\Gi.Batch.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,3 +46,4 @@
     </None>
   </ItemGroup>
 </Project>
+
