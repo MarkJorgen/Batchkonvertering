@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Gi.Batch.Shared\**\*.cs" />
-    <EmbeddedResource Include="Gi.Batch.Shared\**\*.resx" />
-    <None Include="Gi.Batch.Shared\**\*" Exclude="Gi.Batch.Shared\**\*.cs;Gi.Batch.Shared\**\*.resx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.1" />
