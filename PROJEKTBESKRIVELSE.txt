@@ -35,27 +35,24 @@ Konkrete observationer om kodebasen og den praktiske projektkontekst:
   - dk.gi.app.contact.registrering.optaelling
 
 Praktisk projektstruktur, som nu er bevist brugbar i dette projekt:
-- fysisk repo-root: GI-Batch
-- root solution: src/GI.Batch.sln under src/
-- aktive projekter under src/
-- ikke-konverterede legacy-jobprojekter og den fortsat aktive legacy-platform under src/
+- fysisk repo-root: Batchjobs
+- root solution: GI.Batch.sln i projektroden
+- aktive jobprojekter under jobs/
+- legacy-platform og resterende ikke-moderniseret fælleskode under legacy/
 - ny shared-kode under shared/
 - dokumentation under docs/
 - scripts under scripts/
 
 Den konkrete arbejdede struktur er derfor nu:
 
-GI-Batch/
-  Directory.Build.props
+Batchjobs/
+  GI.Batch.sln
   nuget.config
   README.md
-  PROJEKTBESKRIVELSE.txt
-  src/
-    GI.Batch.sln
+  jobs/
     <jobnavn>/
-      <jobnavn>/
-      <jobnavn>.Tests/
-    <øvrige endnu ikke konverterede legacy-projekter>/
+    <jobnavn>.Tests/
+  legacy/
     dk.gi.app/
   shared/
     Gi.Batch.Shared/
@@ -67,28 +64,9 @@ GI-Batch/
   scripts/
 
 Vigtig praktisk læring:
-- den autoritative solution skal ligge som src/GI.Batch.sln og være udvidbar, så nye konverterede og endnu ikke konverterede projekter kan sameksistere under src/
+- root solution skal ligge i projektroden og være udvidbar, så nye jobs kan tilføjes løbende under jobs/
 - root nuget.config er en hård forudsætning i denne struktur, så restore bruger den forventede pakkemappe
 - alle fremtidige zip-leverancer i dette projekt skal som standard indeholde appsettings.local.json med fuldt nøglesæt
-
-
-
-======================================================================
-0A. AKTIV BRANCH-STRUKTUR OG ERSTATNINGSMODEL
-======================================================================
-
-Den aktive DevOps-branch følger nu denne integrationsmodel:
-- GI-Batch bruges som repo-root for den faktiske branch
-- src/ er den aktive projektmappe i branchen
-- konverterede jobs lægges direkte ind under deres eksisterende sti i src/
-- tilsvarende legacy-job slettes først og erstattes derefter 1:1 af den konverterede jobmappe
-- ny shared-kode ligger uden for src/ under shared/
-- docs/ og scripts/ ligger i repo-roden
-
-Det betyder konkret:
-- der må ikke ligge både gammel og ny implementation side om side i samme jobmappe
-- gamle Program-partials, Program.template.cs, request-response-spor, packages.config eller jobspecifikke .sln-filer må ikke blive liggende for de jobs, der er erstattet
-- en branch-leverance er kun korrekt, hvis de erstattede jobmapper er rene erstatninger og ikke overlay-kopier
 
 ======================================================================
 1. FORMÅL
@@ -139,8 +117,9 @@ Det endelige målbillede er som udgangspunkt:
 - jobspecifik kode forbliver lokal
 - dokumentationen beskriver sluttilstanden entydigt
 
-RUN, VERIFYCRM og dokumenteret forretningseffekt er fortsat værdifuld supplerende evidens, men er ikke længere generelt closeout-krav i dette projekt.
-Closeout er fremadrettet som udgangspunkt teknisk closeout baseret på bestået DRYRUN, grøn build/test og opdateret dokumentation.
+RUN og dokumenteret forretningseffekt er fortsat værdifuld supplerende evidens, men er ikke længere generelt closeout-krav i dette projekt.
+VERIFYCRM er derimod sammen med DRYRUN en del af det tekniske closeout-grundlag for konverteringen.
+Closeout er fremadrettet som udgangspunkt teknisk closeout baseret på bestået DRYRUN, bestået VERIFYCRM, grøn build/test og opdateret dokumentation.
 
 Hvis dette ikke er nået, skal jobbet beskrives som mellemtilstand og ikke som sluttilstand.
 
@@ -152,9 +131,9 @@ Projektets slutkrav er GI-afhængighedsfrihed, ikke blot GI NuGet-frihed.
 
 Det betyder:
 - GI NuGet-status og GI assembly-status skal dokumenteres separat
-- top-level runtime artifact verification og teknisk DRYRUN-verifikation skal dokumenteres separat
+- top-level runtime artifact verification, teknisk DRYRUN-verifikation og VERIFYCRM-verifikation skal dokumenteres separat
 - et output-scan uden dk.gi*.dll er ikke alene nok til at kalde et job funktionelt runtime-GI-frit
-- manglende RUN-/effektevidens ændrer ikke et teknisk closeout, men ændrer hvad der ærligt kan skrives om funktionel verifikation
+- manglende RUN-/effektevidens ændrer ikke et teknisk closeout, når DRYRUN og VERIFYCRM er bestået, men ændrer hvad der ærligt kan skrives om funktionel verifikation
 
 2. KONKRET PILOTLÆRING2. KONKRET PILOTLÆRING
 ======================================================================
@@ -303,32 +282,33 @@ Sådan adfærd skal bag eksplicit toggle, og sanitiseret diagnostik er standard.
 
 Som udgangspunkt skal et konverteret job nu tænkes sådan:
 
-GI-Batch/
-  Directory.Build.props
+Batchjobs/
+  GI.Batch.sln
   nuget.config
-  src/
-    GI.Batch.sln
+  jobs/
     <jobnavn>/
-      <jobnavn>/
-        Program.cs
-        GIConsoleApp.cs
-        Application/
-          Contracts/
-          Models/
-          Services/
-        Infrastructure/
-          Composition/
-          Crm/
-          Messaging/
-          Notifications/
-          Runtime/
-          Support/
-      <jobnavn>.Tests/
-        Unit/
-        Integration/
-        Smoke/
-        Regression/
-    <øvrige endnu ikke konverterede legacy-projekter>/
+      <jobnavn>.csproj
+      appsettings.local.json
+      appsettings.local.template.jsonc
+      Program.cs
+      GIConsoleApp.cs
+      Application/
+        Contracts/
+        Models/
+        Services/
+      Infrastructure/
+        Composition/
+        Crm/
+        Messaging/
+        Notifications/
+        Runtime/
+        Support/
+    <jobnavn>.Tests/
+      Unit/
+      Integration/
+      Smoke/
+      Regression/
+  legacy/
     dk.gi.app/
   shared/
     Gi.Batch.Shared/
@@ -340,10 +320,10 @@ GI-Batch/
   scripts/
 
 Praktiske præciseringer:
-- src/GI.Batch.sln er autoritativ solution for den aktive branch
-- konverterede jobs lægges direkte ind som 1:1-erstatninger under src/<jobnavn>/
-- der må ikke lægges overlay-leverancer oven på eksisterende legacy-jobmapper; den tilsvarende src/<jobnavn>/ slettes først og erstattes derefter rent
-- dk.gi.app forbliver legacy-platform under src/dk.gi.app, indtil dens eventuelle shared-opdeling er gennemført særskilt
+- GI.Batch.sln i projektroden er autoritativ root-solution
+- nye jobs tilføjes løbende under jobs/
+- det aktive konverteringsjob holdes som udgangspunkt alene i jobs/ ved start på et nyt mønster
+- legacy/dk.gi.app holdes som legacy-afhængighed, ikke som aktivt målarkitekturprojekt
 - root nuget.config skal bevares i repoet
 - appsettings.local.json skal følge med i alle zip-leverancer
 
@@ -544,18 +524,20 @@ Trin 2 – Første GI-reduktionsblok
 Trin 3 – Teknisk validering
 - lokalfil og systemkilder verificeres
 - DRYRUN gennemføres på den nye vej
+- VERIFYCRM gennemføres som teknisk forbindelses- og konfigurationsverifikation på den nye vej
 - eksterne kald, læseflows og eventuelle skriveflows dokumenteres
 - tekniske risici og begrænsninger dokumenteres
 
 Trin 4 – Supplerende evidens når relevant
-- VERIFYCRM kan køres som forbindelsestest, hvis det giver værdi
 - RUN kan køres, hvis det er sikkert og forretningsmæssigt ønskeligt
 - faktisk effekt dokumenteres som supplerende evidens og ikke som generel closeout-forudsætning
+- parity og yderligere forretningseffekt kan dokumenteres senere uden at ændre det tekniske closeout-grundlag
 
 Trin 5 – Teknisk close-out
 - GI NuGet-status
 - GI assembly-status
 - bestået DRYRUN-status
+- bestået VERIFYCRM-status
 - build-/teststatus
 - verifikationsgrundlag
 - restpunkter og undtagelser
@@ -568,8 +550,8 @@ Trin 5 – Teknisk close-out
 For dette projekt gælder følgende leveranceregler:
 
 - alle leverancer afleveres som zip med én fysisk repo-root
-- root skal hedde GI-Batch
-- den autoritative solution skal være src/GI.Batch.sln
+- root skal hedde Batchjobs
+- GI.Batch.sln skal ligge i roden
 - appsettings.local.json skal med i alle fremtidige zip-leverancer
 - appsettings.local.json skal kun indeholde relevante lokale overrides og de obligatoriske lokale standardnøgler
 - systemforvaltede settings må ikke hardcodes i appsettings.local.json som standard
@@ -577,7 +559,7 @@ For dette projekt gælder følgende leveranceregler:
 - root nuget.config skal med
 - .git, bin og obj skal ikke med
 - gamle mellemtilstande må ikke medtages hvis de giver falske buildfejl
-- hvis en leverance er en erstatning for et job, skal den kunne indkopieres rent ved først at slette den eksisterende src/<jobnavn>/ og derefter kopiere den konverterede mappe ind; obsolete legacyfiler må ikke efterlades
+- hvis en leverance er en erstatning for et job, skal den kunne indkopieres rent uden at efterlade obsolete filer som forstyrrer build eller validering
 
 10. DOKUMENTATIONSKRAV
 ======================================================================
@@ -647,7 +629,7 @@ Ved mellemtilstand eller close-out skal dokumentationen have en tydelig statusma
 - Config-/deploystatus
 - Build-/teststatus
 - DRYRUN-status
-- VERIFYCRM-status hvis relevant
+- VERIFYCRM-status
 - RUN-status hvis relevant
 - Restpunkter og undtagelser
 - Verifikationsgrundlag
@@ -658,9 +640,10 @@ Et job kan fremadrettet lukkes som teknisk closeout når:
 - tests er grønne eller dokumenteret acceptable
 - GI-status er dokumenteret
 - DRYRUN på den nye vej er bestået
+- VERIFYCRM på den nye vej er bestået
 - dokumentationen er opdateret, inklusive eksterne kilder og testcase-dokument når relevant
 
-Hvis VERIFYCRM, RUN eller faktisk forretningseffekt ikke er gennemført, skal det beskrives som manglende supplerende evidens og ikke som blocker for teknisk closeout, medmindre jobbet konkret er markeret som særtilfælde.
+Hvis RUN eller faktisk forretningseffekt ikke er gennemført, skal det beskrives som manglende supplerende evidens og ikke som blocker for teknisk closeout, medmindre jobbet konkret er markeret som særtilfælde.
 
 ======================================================================
 11. AKTUELT RESULTAT
@@ -691,8 +674,8 @@ Følgende er nu desuden bevist for næste fase-jobbet dk.gi.app.contact.registre
 - korte test-outputstier under `artifacts/` er etableret for at undgå path-length-fejl i testprojekter
 
 Management-beslutning i denne iteration:
-- `dk.gi.app.contact.registreringudloebne.optaelling` er lukket som full end-state close-out med accepterede undtagelser
-- dette er en styringsmæssig override af den normale projektregel om mellemtilstand ved manglende parity/forretningseffekt-evidens
+- `dk.gi.app.contact.registreringudloebne.optaelling` er historisk lukket som full end-state close-out med accepterede undtagelser
+- dette er en styringsmæssig override af den tidligere projektregel og står som historisk beslutning, ikke som den nye generelle standard for closeout
 
 Accepterede undtagelser for dette job:
 - funktionel parity mellem legacy og endelig GI-fri implementation er ikke endeligt bevist
@@ -748,26 +731,10 @@ Følgende er nu desuden bevist for fan-out-jobbet dk.gi.app.konto.startarealtjek
   - `Publiceret=1`
 - top-level root bin-scan på samtlige projekter fandt ingen ekstra `dk.gi*.dll`
 
-
-Følgende er nu desuden bevist for næste fase-jobbet dk.gi.app.konto.satser.slet:
-- lokal `DRYRUN` på den nye vej er bestået
-- startup-diagnostik og Dataverse-connect er verificeret
-- observeret resultat i `DRYRUN`: `SatsAar=2027`, `Candidates=1`, `Deleted=0`, `ConnectivityVerified=True`
-- jobbet er dermed løftet fra startkonverteret mellemtilstand til DRYRUN-verificeret close-out-forberedt mellemtilstand
-
-Følgende er nu desuden bevist for næste fase-jobbet dk.gi.app.konto.regnskab.slet:
-- legacy-jobmappen i `GI-Batch/src` er erstattet rent 1:1 af ny konverteret mappe
-- lokal Dataverse-query og lokal Service Bus-publiceringsvej er kodet uden GI request-/response-typer
-- jobdokumentation, testcase-dokument og testprojekt er oprettet
-- lokal `DRYRUN` på den nye vej er bestået
-- startup-diagnostik, CRM-connectivity og Service Bus-settings er verificeret
-- observeret resultat i `DRYRUN`: `SelectedAccounts=1`, `Published=0`, `ConnectivityVerified=True`
-- jobbet er dermed løftet fra startkonverteret mellemtilstand til DRYRUN-verificeret close-out-forberedt mellemtilstand
-
 Følgende er nu desuden bevist for shared-konsolideringssporet:
 - tværgående runtime-/config-/failure-komponenter er løftet ind i `shared/Gi.Batch.Shared` og genbruges nu fra de aktuelt konverterede jobs
 - den samlede testpakke er efter shared-fixrunde rapporteret grøn lokalt
-- shared-konsolideringen ændrer ikke i sig selv funktionel close-out-status for jobs uden `VERIFYCRM`, `RUN` eller parity-evidens
+- shared-konsolideringen ændrer ikke i sig selv teknisk closeout-status for jobs uden `DRYRUN` + `VERIFYCRM`, og ændrer heller ikke funktionel evidensstatus for jobs uden `RUN` eller parity-evidens
 
 Følgende er nu desuden bevist for næste kandidater `dk.gi.app.konto.kontoejerLuk` og `dk.gi.app.ejendom.tjekejerskifte`:
 - lokal `DRYRUN` på den nye vej er rapporteret bestået for begge jobs
@@ -783,14 +750,12 @@ Følgende er nu desuden bevist for næste kandidater `dk.gi.app.konto.kontoejerL
 Korrekt statusformulering nu:
 - piloten dk.gi.app.contact.registrering.optaelling er fortsat et centralt referencejob og ikke nødvendigvis endeligt teknisk slutlukket, men root bin-scan fandt ingen ekstra `dk.gi*.dll`
 - næste fase-jobbet dk.gi.app.contact.registreringudloebne.optaelling er management-closeout’et som full end-state close-out med accepterede undtagelser, og root bin-scan understøtter den allerede dokumenterede GI assembly-status
-- fan-out-jobbet dk.gi.app.contact.lassox.ophoer er nu teknisk close-out-klar på den nye vej med grøn build/test rapporteret lokalt, bestået RUN og dokumenteret write-effekt (`Opdateret=13`)
-- fan-out-jobbet dk.gi.app.contact.selskab er nu teknisk close-out-klar på den nye vej med grøn build/test rapporteret lokalt, bestået RUN og dokumenteret queue-effekt (`Publiceret=2`)
-- fan-out-jobbet dk.gi.app.konto.startarealtjek er nu teknisk close-out-klar på den nye vej med grøn build/test rapporteret lokalt, bestået RUN, dokumenteret write-effekt (`Opdaterede ap_emneforarealtjek på 210 konto(er)`) og dokumenteret queue-effekt (`Publiceret=1`)
-- `dk.gi.app.konto.kontoejerLuk` er nu dokumenteret som close-out-forberedt mellemtilstand med grøn build/test, bestået `DRYRUN` og bestået root bin GI assembly scan, men uden endelig `RUN`-verifikation eller dokumenteret write-effekt
-- `dk.gi.app.ejendom.tjekejerskifte` er nu dokumenteret som close-out-forberedt mellemtilstand med grøn build/test, bestået `DRYRUN` og bestået root bin GI assembly scan, men uden endelig `RUN`-verifikation, dokumenteret queue-effekt eller parity-verifikation
-- `dk.gi.app.konto.satser.slet` er nu dokumenteret som DRYRUN-verificeret close-out-forberedt mellemtilstand med observeret `Candidates=1`, `Deleted=0` og `ConnectivityVerified=True`, men uden særskilt testkørsel eller `RUN`-evidens endnu
-- `dk.gi.app.konto.regnskab.slet` er nu dokumenteret som DRYRUN-verificeret close-out-forberedt mellemtilstand med observeret `SelectedAccounts=1`, `Published=0` og `ConnectivityVerified=True`, men uden særskilt testkørsel eller `RUN`-evidens endnu
-- parity- og ekstra forretningseffektspor kan fortsat forbedres senere uden at ændre den historiske close-out-beslutning for udløbne-optaelling eller den tekniske close-out-vurdering for lassox-ophoer, contact.selskab og konto.startarealtjek
+- fan-out-jobbet dk.gi.app.contact.lassox.ophoer har stærk supplerende RUN-evidens på den nye vej med grøn build/test rapporteret lokalt og dokumenteret write-effekt (`Opdateret=13`), men er ikke formelt teknisk closeout’et efter den nye projektregel før `VERIFYCRM` også er dokumenteret
+- fan-out-jobbet dk.gi.app.contact.selskab har stærk supplerende RUN-evidens på den nye vej med grøn build/test rapporteret lokalt og dokumenteret queue-effekt (`Publiceret=2`), men er ikke formelt teknisk closeout’et efter den nye projektregel før `VERIFYCRM` også er dokumenteret
+- fan-out-jobbet dk.gi.app.konto.startarealtjek har stærk supplerende RUN-evidens på den nye vej med grøn build/test rapporteret lokalt, dokumenteret write-effekt (`Opdaterede ap_emneforarealtjek på 210 konto(er)`) og dokumenteret queue-effekt (`Publiceret=1`), men er ikke formelt teknisk closeout’et efter den nye projektregel før `VERIFYCRM` også er dokumenteret
+- `dk.gi.app.konto.kontoejerLuk` er nu dokumenteret som closeout-forberedt mellemtilstand med grøn build/test, bestået `DRYRUN` og bestået root bin GI assembly scan, men uden bestået `VERIFYCRM` eller endelig `RUN`-verifikation
+- `dk.gi.app.ejendom.tjekejerskifte` er nu dokumenteret som closeout-forberedt mellemtilstand med grøn build/test, bestået `DRYRUN` og bestået root bin GI assembly scan, men uden bestået `VERIFYCRM`, endelig `RUN`-verifikation, dokumenteret queue-effekt eller parity-verifikation
+- parity- og ekstra forretningseffektspor kan fortsat forbedres senere uden at ændre den historiske evidens, men efter den nye projektregel er `DRYRUN` + `VERIFYCRM` det formelle tekniske closeout-grundlag
 
 ======================================================================
 12. NÆSTE STEP FOR PROJEKTET
@@ -804,12 +769,6 @@ De rigtige næste skridt er nu:
 - sikre at systemforvaltede settings ikke overrides lokalt som standard
 - dokumentere afvigelser eksplicit pr. job
 
-12.1A Supplerende evidens for `dk.gi.app.konto.regnskab.slet`
-- dokumentér separat testkørsel, hvis den ønskes som supplerende evidens
-- dokumentér `VERIFYCRM` som separat forbindelsesevidens, hvis det giver værdi ud over den beståede `DRYRUN`
-- kør kun `RUN`, hvis Service Bus-publicering er driftsmæssigt afklaret og sikker
-- opdatér jobdokumentationen med faktisk queue-effekt, hvis `RUN` gennemføres
-
 12.2 Dokumentér eksterne kilder konsekvent
 - skriv for hvert job hvilke eksterne kilder der kaldes
 - beskriv hvordan de kaldes, i hvilke modes og med hvilke afhængigheder
@@ -822,14 +781,9 @@ De rigtige næste skridt er nu:
 - brug testcase-dokumentet som drift-/teststøtte og som tæt supplement til jobdokumentationen
 
 12.4 Brug teknisk closeout som standard
-- closeout baseres fremadrettet på grøn build/test, dokumenteret GI-status og bestået DRYRUN
-- VERIFYCRM, RUN og effektevidens dokumenteres når de findes, men er ikke generelt obligatoriske for closeout
+- closeout baseres fremadrettet på grøn build/test, dokumenteret GI-status, bestået DRYRUN og bestået VERIFYCRM
+- RUN og effektevidens dokumenteres når de findes, men er ikke generelt obligatoriske for closeout
 - hold teknisk closeout og funktionel evidens klart adskilt i dokumentationen
-
-12.5 Fortsæt med ren `src`-erstatning i næste bølger
-- næste ikke-konverterede legacy-job erstattes rent mappe-for-mappe i `GI-Batch/src`
-- `dk.gi.app.konto.regnskab.slet` er nu dokumenteret til og med første tekniske `DRYRUN`
-- første runtime-mål for nye kandidater er `VERIFYCRM` og `DRYRUN`, før der tages stilling til `RUN`
 
 ======================================================================
 13. KORT HANDOFF TIL NÆSTE CHAT
@@ -838,7 +792,7 @@ De rigtige næste skridt er nu:
 Hvis arbejdet fortsættes i en ny chat, skal følgende kontekst med:
 - Projekt: Batchjobs / GI Batch/WebJobs på .NET Framework 4.8
 - Pilotjob: dk.gi.app.contact.registrering.optaelling
-- Rootstruktur: GI-Batch med src/GI.Batch.sln som autoritativ solution
+- Rootstruktur: Batchjobs med GI.Batch.sln i roden
 - alle batchjobs skal have `appsettings.local.json`
 - `appsettings.local.json` skal kun indeholde relevante lokale overrides samt de obligatoriske lokale standardnøgler:
   - `Mode=DRYRUN`
@@ -847,8 +801,8 @@ Hvis arbejdet fortsættes i en ny chat, skal følgende kontekst med:
   - `LocalDebugLogPath=C:\Temp\GI.Batch\LocalLogs`
   - `modtagereEmail=mpa.gi@hotmail.com`
 - systemforvaltede settings som Service Bus- og CRM-kerneværdier skal som udgangspunkt ikke overrides lokalt
-- closeout er fremadrettet teknisk closeout baseret på bestået DRYRUN, grøn build/test og opdateret dokumentation
-- VERIFYCRM, RUN og faktisk forretningseffekt er supplerende evidens og ikke generelt closeout-krav
+- closeout er fremadrettet teknisk closeout baseret på bestået DRYRUN, bestået VERIFYCRM, grøn build/test og opdateret dokumentation
+- RUN og faktisk forretningseffekt er supplerende evidens og ikke generelt closeout-krav
 - hvert jobdokument skal indeholde oversigt over eksterne kilder og hvordan de kaldes
 - når et job har flere integrationsscenarier, skal der laves et særskilt testcase-dokument for eksterne kald
 - Shared skal bruges for generisk startup/config/diagnostik, ikke for jobspecifik domænelogik før mønstret er bevist bredere
