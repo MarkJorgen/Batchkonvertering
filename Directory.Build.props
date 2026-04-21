@@ -1,6 +1,9 @@
 <Project>
 	<PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
-		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\artifacts\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-		<BaseOutputPath>$(MSBuildThisFileDirectory)..\artifacts\bin\$(MSBuildProjectName)\</BaseOutputPath>
+		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory).a\o\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+		<BaseOutputPath>$(MSBuildThisFileDirectory).a\b\$(MSBuildProjectName)\</BaseOutputPath>
+		<MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+		<IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+		<PublishDir>$(MSBuildThisFileDirectory).a\p\$(MSBuildProjectName)\</PublishDir>
 	</PropertyGroup>
 </Project>

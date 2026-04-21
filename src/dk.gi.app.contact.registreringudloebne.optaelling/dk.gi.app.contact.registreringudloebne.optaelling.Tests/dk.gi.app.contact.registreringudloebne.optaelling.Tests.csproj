@@ -3,8 +3,9 @@
     <TargetFramework>net48</TargetFramework>
     <IsPackable>false</IsPackable>
     <Nullable>disable</Nullable>
-    <BaseIntermediateOutputPath>..\..\..\artifacts\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\..\artifacts\bin\$(MSBuildProjectName)\</BaseOutputPath>
+	  <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\.a\o\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+	  <BaseOutputPath>$(MSBuildThisFileDirectory)..\..\..\..\.a\b\$(MSBuildProjectName)\</BaseOutputPath>
+	  <PublishDir>$(MSBuildThisFileDirectory)..\..\..\..\.a\p\$(MSBuildProjectName)\</PublishDir>
   </PropertyGroup>
 
   <ItemGroup>

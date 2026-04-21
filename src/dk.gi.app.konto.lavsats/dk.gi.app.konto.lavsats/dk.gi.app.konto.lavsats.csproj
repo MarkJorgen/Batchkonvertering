@@ -320,10 +320,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="ZipOutputPath" AfterTargets="Build">
-    <ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(MSBuildProjectDirectory)\$(ProjectName).zip" />
-  </Target>
-  <Target Name="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\$(ProjectName).zip')">
-    <Delete Files="$(MSBuildProjectDirectory)\$(ProjectName).zip" />
-  </Target>
 </Project>
