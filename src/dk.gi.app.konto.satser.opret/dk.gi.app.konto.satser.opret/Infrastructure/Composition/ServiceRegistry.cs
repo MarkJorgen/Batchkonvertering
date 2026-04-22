@@ -1,6 +1,7 @@
-using dk.gi.app.konto.satser.opret.Application.Contracts;
+﻿using dk.gi.app.konto.satser.opret.Application.Contracts;
 using dk.gi.app.konto.satser.opret.Application.Models;
 using dk.gi.app.konto.satser.opret.Application.Services;
+using dk.gi.app.konto.satser.opret.Infrastructure.Crm;
 using Microsoft.Extensions.Logging;
 
 namespace dk.gi.app.konto.satser.opret.Infrastructure.Composition
@@ -16,8 +17,12 @@ namespace dk.gi.app.konto.satser.opret.Infrastructure.Composition
             _settings = settings;
         }
 
-        public OpretSatserOrchestrator CreateOrchestrator(IOpretSatserRepository repository, IConnectivityVerifier verifier)
+        public OpretSatserOrchestrator CreateOrchestrator()
         {
+            var connectionFactory = new DataverseConnectionFactory(_settings);
+            IOpretSatserRepository repository = new LegacyOpretSatserRepository(connectionFactory, _loggerFactory.CreateLogger<LegacyOpretSatserRepository>());
+            IConnectivityVerifier verifier = new DataverseConnectivityVerifier(connectionFactory, _loggerFactory.CreateLogger<DataverseConnectivityVerifier>());
+
             return new OpretSatserOrchestrator(
                 repository,
                 verifier,

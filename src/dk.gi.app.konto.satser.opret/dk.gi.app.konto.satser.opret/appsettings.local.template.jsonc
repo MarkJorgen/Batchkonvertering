@@ -1,0 +1,8 @@
+﻿{
+  // Lokal override-fil til udvikling og teknisk validering
+  "Mode": "DRYRUN",
+  "EnableFailureEmail": false,
+  "EnableLocalDebugLogging": true,
+  "LocalDebugLogPath": "C:\\Temp\\GI.Batch\\LocalLogs",
+  "modtagereEmail": "mpa.gi@hotmail.com"
+}
